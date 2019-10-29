@@ -10,13 +10,16 @@ VERSION=0.1.0
 BUILD=$(shell git rev-parse HEAD)
 LDFLAGS=-ldflags "-X main.Version=$(VERSION) -X main.Build=$(BUILD)"
 
-all:
-	go build -o $(BINARY) $(LDFLAGS)
+all: clean
+	@echo "Building binary version: $(VERSION), build: $(BUILD)"
+	@go build -o $(BINARY) $(LDFLAGS)
 
 docker:
-	docker build -t "$(REGISTRY)/$(BINARY):$(VERSION)" \
+	@echo 'Building docker image version: $(VERSION), build: $(BUILD)'
+	@docker build -t "$(REGISTRY)/$(BINARY):$(VERSION)" \
 		--build-arg build=$(BUILD) --build-arg version=$(VERSION) \
 		-f Dockerfile .
 
 clean:
-	-rm $(BINARY)
+	@echo 'Removing present binaries'
+	@-rm $(BINARY) >/dev/null

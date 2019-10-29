@@ -20,6 +20,15 @@ $ cd $GOPATH/src/github.com/aleccunningham/pt
 $ GOBIN="/usr/local/bin" go install
 ```
 
+### Docker
+
+You can also use the official docker image hosted at `r.kubernetes.lol`.
+
+```
+$ make docker
+$ docker run -t -v $(pwd)/config.yaml:/config.yaml r.kubernetes.lol/pt:$VERSION <command>
+```
+
 ## Getting Started
 
 The **start** command will start tracking time for a given taskname. **Note that a taskname cannot have white spaces**, they serve as identifiers.

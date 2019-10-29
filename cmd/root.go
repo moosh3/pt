@@ -19,6 +19,11 @@ func Execute(b, v string) {
 	Build = b
 	Version = v
 	rootCmd.AddCommand(version)
+	rootCmd.AddCommand(start)
+	rootCmd.AddCommand(stop)
+	rootCmd.AddCommand(list)
+	rootCmd.AddCommand(describe)
+	rootCmd.AddCommand(edit)
 	if err := rootCmd.Execute(); err != nil {
 		logrus.WithError(err).Fatal()
 	}
