@@ -7,27 +7,7 @@ type Client struct {
 }
 
 // Nodes
-func (c *Client) ListNodes()
-func (c *Client) GetNode(id int) (Node, error) {} 
-func (c *Client) CreateNode(Node) (Node, error) {}
-func (c *Client) UpdateNode(Node) (Node, error) {}
-
-// Versions
-func (c *Client) ListVersions() ([]Version, error) {}
-func (c *Client) GetVersion(id int) {}
-func (c *Client) CreateVersion(Version) {}
-func (c *Client) UpdateVersion(Version) {}
-
-// Upgrades
-func (c *Client) ListUpgrades() ([]Upgrade, error) {}
-func (c *Client) GetUpgrade(id int) (Upgrade, error) {}
-func (c *Client) CreateUpgrade(Upgrade) (Upgrade, error) {}
-func (c *Client) UpdateUpgrade(Upgrade) (Upgrade, error) {}
-
-func (c *Client) ListEnvironments() {}
-func (c *Client) GetEnvironment() {}
-
-
+// ListNodes
 func (c *Client) ListNodes() ([]Node, error) {
     req, err := c.newRequest("GET", "/nodes", nil)
     if err != nil {
@@ -38,7 +18,186 @@ func (c *Client) ListNodes() ([]Node, error) {
     return nodes, err
 }
 
-// newRequest 
+// GetNode
+func (c *Client) GetNode(id int) (Node, error) {
+	req, err := c.newRequest("GET", "/nodes", nil)
+	if err != nil {
+			return nil, err
+	}
+	var nodes []Node
+	_, err = c.do(req, &nodes)
+	return nodes, err
+}
+
+// CreateNode
+func (c *Client) CreateNode(Node) (Node, error) {
+	req, err := c.newRequest("POST", "/nodes", nil)
+	if err != nil {
+			return nil, err
+	}
+	var nodes []Node
+	_, err = c.do(req, &nodes)
+	return nodes, err
+}
+
+// UpdateNode
+func (c *Client) UpdateNode(Node) (Node, error) {
+	req, err := c.newRequest("PATCH", "/nodes", nil)
+	if err != nil {
+			return nil, err
+	}
+	var node Node
+	_, err = c.do(req, &node)
+	return node, err
+}
+
+// DeleteNode
+func (c *Client) DeleteNode(Node) (Node, error) {
+	req, err := c.newRequest("POST", "/nodes", nil)
+	if err != nil {
+			return nil, err
+	}
+	var node Node
+	_, err = c.do(req, &node)
+	return node, err
+}
+
+// Versions
+// ListVersions
+func (c *Client) ListVersions() ([]Version, error) {
+	req, err := c.newRequest("GET", "/versions", nil)
+	if err != nil {
+			return nil, err
+	}
+	var versions []Version
+	_, err = c.do(req, &versions)
+	return versions, err
+}
+
+// GetVersion
+func (c *Client) GetVersion(id int) {
+	req, err := c.newRequest("GET", "/versions", nil)
+	if err != nil {
+			return nil, err
+	}
+	var version Version
+	_, err = c.do(req, &version)
+	return version, err
+}
+
+// CreateVersion
+func (c *Client) CreateVersion(Version) {
+	req, err := c.newRequest("POST", "/versions", nil)
+	if err != nil {
+			return nil, err
+	}
+	var version Version
+	_, err = c.do(req, &version)
+	return version, err
+}
+
+// UpdateVersion
+func (c *Client) UpdateVersion(Version) {
+	req, err := c.newRequest("PATCH", "/versions", nil)
+	if err != nil {
+			return nil, err
+	}
+	var version Version
+	_, err = c.do(req, &version)
+	return version, err
+}
+
+// DeleteVersion
+func (c *Client) DeleteVersion(Version) {
+	req, err := c.newRequest("POST", "/versions", nil)
+	if err != nil {
+			return nil, err
+	}
+	var version Version
+	_, err = c.do(req, &version)
+	return version, err
+}
+
+
+// Upgrades
+// ListUpgrades
+func (c *Client) ListUpgrades() ([]Upgrade, error) {
+	req, err := c.newRequest("GET", "/upgrades", nil)
+	if err != nil {
+			return nil, err
+	}GET
+	var upgrades []Upgrade
+	_, err = c.do(req, &upgrades)
+	return upgrades, err
+}
+
+// GetUpgrade
+func (c *Client) GetUpgrade(id int) (Upgrade, error) {
+	req, err := c.newRequest("GET", "/upgrades", nil)
+	if err != nil {
+			return nil, err
+	}
+	var upgrade Upgrade
+	_, err = c.do(req, &upgrade)
+	return upgrade, err
+}
+
+// CreateUpgrade
+func (c *Client) CreateUpgrade(Upgrade) (Upgrade, error) {
+	req, err := c.newRequest("POST", "/upgrades", nil)
+	if err != nil {
+			return nil, err
+	}
+	var upgrade Upgrade
+	_, err = c.do(req, &upgrade)
+	return upgrade, err
+}
+
+// UpdateUpgrade
+func (c *Client) UpdateUpgrade(Upgrade) (Upgrade, error) {
+	req, err := c.newRequest("PATCH", "/upgrades", nil)
+	if err != nil {
+			return nil, err
+	}
+	var upgrade Upgrade
+	_, err = c.do(req, &upgrade)
+	return upgrade, err
+}
+
+// DeleteUpgrade
+func (c *Client) DeleteUpgrade(Upgrade) (Upgrade, error) {
+	req, err := c.newRequest("POST", "/upgrades", nil)
+	if err != nil {
+			return nil, err
+	}
+	var upgrade Upgrade
+	_, err = c.do(req, &upgrade)
+	return upgrade, err
+}
+
+// ListEnvironments
+func (c *Client) ListEnvironments() {
+	req, err := c.newRequest("GET", "/environments", nil)
+	if err != nil {
+			return nil, err
+	}
+	var environments []Environment
+	_, err = c.do(req, &environments)
+	return nodes, err
+}
+
+// GetEnvironment
+func (c *Client) GetEnvironment() {
+	req, err := c.newRequest("GET", "/environments", nil)
+	if err != nil {
+			return nil, err
+	}
+	var environment Environment
+	_, err = c.do(req, &environment)
+	return nodes, err
+}
+
+// newRequest
 func (c *Client) newRequest(method, path string, body interface{}) (*http.Request, error) {
     rel := &url.URL{Path: path}
     u := c.BaseURL.ResolveReference(rel)
