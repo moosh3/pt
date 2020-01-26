@@ -1,6 +1,12 @@
-package pomo
+package v1
 
-import "time"
+import (
+	"time"
+
+	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/watch"
+	"k8s.io/client-go/kubernetes/scheme"
+)
 
 // PomoGetter has a method to return a DeploymentInterface.
 // A group's client should implement this interface.
@@ -10,22 +16,16 @@ type PomoGetter interface {
 
 // PomoInterface has methods to work with Pomo resources.
 type PomoInterface interface {
-	Create(*v1beta1.Deployment) (*v1beta1.Deployment, error)
-	Update(*v1beta1.Deployment) (*v1beta1.Deployment, error)
-	UpdateStatus(*v1beta1.Deployment) (*v1beta1.Deployment, error)
+	Create(*Pomo) (*Pomo, error)
+	Update(*Pomo) (*Pomo, error)
 	Delete(name string, options *v1.DeleteOptions) error
-	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1beta1.Deployment, error)
-	List(opts v1.ListOptions) (*v1beta1.DeploymentList, error)
-	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1beta1.Deployment, err error)
-	DeploymentExpansion
+	Get(name string, options v1.GetOptions) (*Pomo, error)
+	List(opts v1.ListOptions) (*PomoList, error)
 }
 
 // pomos implements PomoInterface
 type pomos struct {
 	client c
-	ns     string
 }
 
 // newPomos returns a pomos
@@ -92,9 +92,8 @@ func (c *pomos) Delete(Pomo) (Pomo, error) {
 
 // Get takes name of the deployment, and returns the corresponding deployment object, and an error if there is any.
 func (c *deployments) Get(name string, options metav1.GetOptions) (result *v1.Deployment, err error) {
-	result = &v1.Deployment{}
+	result = &Pomo{}
 	err = c.client.Get().
-		Namespace(c.ns).
 		Resource("deployments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -111,7 +110,6 @@ func (c *deployments) List(opts metav1.ListOptions) (result *v1.DeploymentList, 
 	}
 	result = &v1.DeploymentList{}
 	err = c.client.Get().
-		Namespace(c.ns).
 		Resource("deployments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -128,7 +126,6 @@ func (c *deployments) Watch(opts metav1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
-		Namespace(c.ns).
 		Resource("deployments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -137,9 +134,8 @@ func (c *deployments) Watch(opts metav1.ListOptions) (watch.Interface, error) {
 
 // Create takes the representation of a deployment and creates it.  Returns the server's representation of the deployment, and an error, if there is any.
 func (c *deployments) Create(deployment *v1.Deployment) (result *v1.Deployment, err error) {
-	result = &v1.Deployment{}
+	result = &Pomo{}
 	err = c.client.Post().
-		Namespace(c.ns).
 		Resource("deployments").
 		Body(deployment).
 		Do().
@@ -149,9 +145,8 @@ func (c *deployments) Create(deployment *v1.Deployment) (result *v1.Deployment, 
 
 // Update takes the representation of a deployment and updates it. Returns the server's representation of the deployment, and an error, if there is any.
 func (c *deployments) Update(deployment *v1.Deployment) (result *v1.Deployment, err error) {
-	result = &v1.Deployment{}
+	result = &Pomo{}
 	err = c.client.Put().
-		Namespace(c.ns).
 		Resource("deployments").
 		Name(deployment.Name).
 		Body(deployment).
@@ -164,7 +159,7 @@ func (c *deployments) Update(deployment *v1.Deployment) (result *v1.Deployment, 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
 func (c *deployments) UpdateStatus(deployment *v1.Deployment) (result *v1.Deployment, err error) {
-	result = &v1.Deployment{}
+	result = &Pomo{}
 	err = c.client.Put().
 		Namespace(c.ns).
 		Resource("deployments").
@@ -205,7 +200,7 @@ func (c *deployments) DeleteCollection(options *metav1.DeleteOptions, listOption
 
 // Patch applies the patch and returns the patched deployment.
 func (c *deployments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1.Deployment, err error) {
-	result = &v1.Deployment{}
+	result = &Pomo{}
 	err = c.client.Patch(pt).
 		Namespace(c.ns).
 		Resource("deployments").

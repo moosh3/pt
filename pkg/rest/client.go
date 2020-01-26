@@ -1,16 +1,16 @@
 package pomo
 
 import (
-	"bytes"
-	"encoding/json"
-	"io"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/rest"
 )
 
 type RestInterface interface {
-	GetRateLimiter() flowcontrol.RateLimiter
 	Verb(verb string) *Request
 	Post() *Request
 	Put() *Request
@@ -20,23 +20,18 @@ type RestInterface interface {
 	APIVersion() schema.GroupVersion
 }
 
-
-type Client struct {
+type RESTClient struct {
 	// base is the root URL for all invocations of the client
-	base		*url.URL
-	UserAgent	string
+	base      *url.URL
+	UserAgent string
 
 	// Set specific behavior of the client.  If not set http.DefaultClient will be used.
-	httpClient	*http.client
+	Client *http.client
 }
 
 // NewRESTClient creates a new RESTClient. This client performs generic REST functions
 // such as Get, Put, Post, and Delete on specified paths.
-func NewRESTClient(baseURL *url.URL, versionedAPIPath string, config ClientContentConfig, rateLimiter flowcontrol.RateLimiter, client *http.Client) (*RESTClient, error) {
-	if len(config.ContentType) == 0 {
-		config.ContentType = "application/json"
-	}
-
+func NewRESTClient(baseURL *url.URL, client *http.Client) (*RESTClient, error) {
 	base := *baseURL
 	if !strings.HasSuffix(base.Path, "/") {
 		base.Path += "/"
@@ -45,11 +40,7 @@ func NewRESTClient(baseURL *url.URL, versionedAPIPath string, config ClientConte
 	base.Fragment = ""
 
 	return &RESTClient{
-		base:             &base,
-		versionedAPIPath: versionedAPIPath,
-		content:          config,
-		createBackoffMgr: readExpBackoffConfig,
-		rateLimiter:      rateLimiter,
+		base: &base,
 
 		Client: client,
 	}, nil
@@ -102,47 +93,13 @@ func (c *RESTClient) APIVersion() schema.GroupVersion {
 	return c.content.GroupVersion
 }
 
-// newRequest
-func (c *Client) newRequest(method, path string, body interface{}) (*http.Request, error) {
-    rel := &url.URL{Path: path}
-    u := c.BaseURL.ResolveReference(rel)
-    var buf io.ReadWriter
-    if body != nil {
-        buf = new(bytes.Buffer)
-        err := json.NewEncoder(buf).Encode(body)
-        if err != nil {
-            return nil, err
-        }
-    }
-    req, err := http.NewRequest(method, u.String(), buf)
-    if err != nil {
-        return nil, err
-    }
-    if body != nil {
-        req.Header.Set("Content-Type", "application/json")
-    }
-    req.Header.Set("Accept", "application/json")
-    req.Header.Set("User-Agent", c.UserAgent)
-    return req, nil
-}
-
-// do
-func (c *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
-    resp, err := c.httpClient.Do(req)
-    if err != nil {
-        return nil, err
-    }
-    defer resp.Body.Close()
-    err = json.NewDecoder(resp.Body).Decode(v)
-    return resp, err
-}
-
+// V1 Client
 
 type PomoV1Interface interface {
 	RESTClient() RestInterface
 	PomoGetter
 	TodoGetter
-	SubtodoGetter
+	SubTodoGetter
 }
 
 type PomoV1Client struct {
