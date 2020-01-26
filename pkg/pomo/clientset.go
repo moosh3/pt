@@ -1,6 +1,9 @@
 package pomo
 
-import "k8s.io/client-go/rest"
+import (
+	"github.com/aleccunningham/pt/internal/rest"
+	v1 "github.com/aleccunningham/pt/pkg/pomo/typed/v1"
+)
 
 type Interface interface {
 	PomosV1() v1.PomoInterface

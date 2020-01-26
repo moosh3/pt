@@ -1,4 +1,4 @@
-package pomo
+package v1
 
 // Pomo ...
 type Pomo struct {
